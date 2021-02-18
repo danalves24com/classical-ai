@@ -20,11 +20,12 @@ public class testMidi {
 		// List of all files and directories
 		String contents[] = directoryPath.list();
 		System.out.println("augmentig data:");
-		for (int i = 0; i < contents.length; i++) {
+		for (int i = 0; i < contents.length-1; i++) {
 			String path = "F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\bethoven\\" + contents[i];
 			generateFromMidi gfm = new generateFromMidi(path, "F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\bethoven_aug\\" + contents[i] + "_AUG" + ".txt");
 			gfm.generateLists();
 			gfm.generateData();
+			gfm.makeUniform();
 			gfm.SaveData();
 			index += 1;
 		}

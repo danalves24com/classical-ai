@@ -35,17 +35,18 @@ public class testModel {
 	
 	@Test
 	public void test() throws FileNotFoundException, IOException, InterruptedException {
+		Integer inputVectorDims = 6;
 		Model model = new Model();		
 		Integer itteration = 0;
 		File directoryPath = new File(paths[0]);
 		String contents[] = directoryPath.list();
 		new databaseConnection().openConnection();
-		model.loadParams(3,  12);
+		model.loadParams(inputVectorDims,  12);
 		model.createNetwork();
 		String gen = getAlphaNumericString(4);
 		for (String file : contents) {
 			System.out.println("training model for: " + file);
-			model.loadData(paths[0]+ "\\" + file, null, 3, 12);
+			model.loadData(paths[0]+ "\\" + file, null, inputVectorDims, 12);
 			model.trainNetwork(null);
 			model.uploadSelfToDatabase("gen"+gen+"-load-"+itteration, new databaseConnection());
 			itteration+=1;

@@ -16,8 +16,10 @@ public class testGenerator {
 	public void test() throws IOException, InterruptedException, SQLException {
 		new databaseConnection().openConnection();
 		generateMusic gen = new generateMusic();
-		gen.loadData("F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\generation_seeds\\gen_seed_01.txt");
-		gen.generate((new databaseConnection()).getModel("genAge3-load-4"));
+		gen.setSeedName("F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\generation_seeds\\gen_seed_01.txt");
+		gen.generate((new databaseConnection()).getModel("type4-G_m7JF-load-4"));
+		gen.play();
+		gen.saveNotesToFile("flute_composition.mid");
 	}
-
+	
 }

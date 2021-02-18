@@ -89,12 +89,12 @@ public class Model {
 			}
 		}
 	}
-	
+
 	/**
 	 * Train network.
 	 *
 	 * @param testingData the testing data
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException          Signals that an I/O exception has occurred.
 	 * @throws InterruptedException the interrupted exception
 	 */
 	public void trainNetwork(String testingData) throws IOException, InterruptedException {
@@ -109,6 +109,7 @@ public class Model {
 		model.fit(teachingData);
 		System.out.println();
 	}
+
 	public void testNetwork() {
 		// test the model
 		INDArray output = model.output(testingData.getFeatureMatrix());
@@ -125,18 +126,17 @@ public class Model {
 	public void createNetwork() {
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().iterations(10000)
 				.activation(Activation.RELU).weightInit(WeightInit.XAVIER).learningRate(0.1).regularization(true)
-				.l2(0.0001).list().layer(0, new DenseLayer.Builder().nIn(this.in).nOut(10).build())
-				.layer(1, new DenseLayer.Builder().nIn(10).nOut(10).build())
+				.l2(0.0001).list().layer(0, new DenseLayer.Builder().nIn(this.in).nOut(9).build())
+				.layer(1, new DenseLayer.Builder().nIn(9).nOut(9).build())
 				.layer(2,
 						new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-								.activation(Activation.SOFTMAX).nIn(10).nOut(this.out).build())
+								.activation(Activation.SOFTMAX).nIn(9).nOut(this.out).build())
 				.backprop(true).pretrain(false).build();
 
 		// compile the model
 		model = new MultiLayerNetwork(conf);
 		model.init();
 	}
-	
 
 	public void uploadSelfToDatabase(String name, databaseConnection con) throws IOException {
 		con.addModel(this.model, name);

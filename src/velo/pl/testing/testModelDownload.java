@@ -16,8 +16,8 @@ public class testModelDownload {
 	public void test() throws SQLException, IOException, InterruptedException {
 		(new databaseConnection()).openConnection();
 		modelRun mr = new modelRun();
-		mr.importModel((new databaseConnection()).getModel("stateAtbeethoven_les_adieux_2.mid_AUG.txt"));
-		mr.testModel("F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\bethoven_testing\\mond_3.mid_AUG.txt", 3, 12);
+		mr.importModel((new databaseConnection()).getModel("type2-G_pD8l-load-1"));
+		mr.testModel("F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\bethoven_testing\\mond_2.mid_AUG.txt", 3, 12);
 	}
 
 }
