@@ -31,6 +31,10 @@ public class FileData {
 
 	}
 
+	public void setParam() {
+		
+	}
+	
 	public double[] getSliceOfArray(List<Writable> list, int start, int end) {
 
 		double[] slice = new double[end - start];
@@ -42,7 +46,7 @@ public class FileData {
 		return slice;
 	}
 
-	public DataSet get(String path) throws IOException, InterruptedException {
+	public DataSet get(String path, Integer inC, Integer outC) throws IOException, InterruptedException {
 		String trainingData = path;
 		RecordReader recordReader = new CSVRecordReader(0, ',');
 		recordReader.initialize(new FileSplit(new File(trainingData)));
@@ -63,7 +67,7 @@ public class FileData {
 			}
 			if(!fail1) {
 				try {
-					getOutputArray(rec.get(in).toDouble(), 12);
+					getOutputArray(rec.get(inC).toDouble(), outC);
 				}
 				catch (Exception e) {
 					System.out.println("fail2");
@@ -77,8 +81,8 @@ public class FileData {
 			
 			if((!fail1)) {
 				if(!fail2) {
-					inp.add(getSliceOfArray(rec, 0, in));
-					out.add(getOutputArray(rec.get(in).toDouble(), 12));
+					inp.add(getSliceOfArray(rec, 0, inC));
+					out.add(getOutputArray(rec.get(inC).toDouble(), outC));
 				}
 			}
 			else {
@@ -87,8 +91,8 @@ public class FileData {
 			
 			it += 1;
 		}
-		double[][] inputs = new double[inp.size()][in];
-		float[][] outputs = new float[out.size()][12];
+		double[][] inputs = new double[inp.size()][inC];
+		float[][] outputs = new float[out.size()][outC];
 		for (double[] db : inp) {
 			inputs[inp.indexOf(db)] = db;
 		}
@@ -101,6 +105,7 @@ public class FileData {
 //		System.out.println(Arrays.deepToString(outputs));
 //		RecordReaderDataSetIterator iterator = new RecordReaderDataSetIterator(recordReader, dat, 6, 12);		System.out.println(inputs.length + " | " + outputs.length);		
 		DataSet teachingData = new DataSet(Nd4j.create(inputs), Nd4j.create(outputs));
+		System.out.println(teachingData);
 //		System.out.println(teachingData);
 //		System.out.println(teachingData);/
 		return teachingData;

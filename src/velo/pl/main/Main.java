@@ -44,7 +44,7 @@ public class Main {
 		String contents[] = directoryPath.list();
 		String gen = getAlphaNumericString(4);
 		for(String content : contents) {
-			model.train((new FileData()).get("/home/velo/data/bethoven_aug/"+content));
+			model.train((new FileData()).get("/home/velo/data/bethoven_aug/"+content, inputDims, outputDims));
 			model.uploadSelfToDatabase("type3-G_"+gen+"-load-"+itteration, new databaseConnection());
 //			
 			itteration+=1;			

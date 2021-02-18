@@ -32,23 +32,23 @@ public class generateMusic {
 	private DataSet data = null;
 	public final String[] NOTE_NAMES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	String name = null;
-	ArrayList<Double> notes = new ArrayList<Double>();
+	ArrayList<Double> notes = new ArrayList<Double>(), octaves = new ArrayList<Double>();
 
 	public void setSeedName(String name) {
 		this.name = name;
 	}
 
 	public void loadData(String initData) throws IOException, InterruptedException {
-		this.data = new FileData().get(initData);
+		this.data = new FileData().get(initData, 20, 12);
 	}
 
-	private void appendNoteToFile(Double note) throws IOException {
-		FileReader fileReader = new FileReader(this.name);
+	private void appendNoteToFile(Double note, String name) throws IOException {
+		FileReader fileReader = new FileReader(name);
 		String line = null;
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		while ((line = bufferedReader.readLine()) != null) {
 			if (line.contains(",")) {
-				System.out.println(line);
+				//System.out.println(line);
 				String[] split = line.split(",");
 
 				// vomit worthy -- I know
@@ -57,7 +57,7 @@ public class generateMusic {
 				}
 				split[20] = Double.toString(note);
 				line = String.join(",", split);
-				System.out.println(line + " | " + note);
+				//System.out.println(line + " | " + note);
 				FileWriter fileWriter = new FileWriter(this.name);
 				BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 				bufferedWriter.write(line);
@@ -76,7 +76,7 @@ public class generateMusic {
 			String ind = NOTE_NAMES[(int) (note * 12)];
 			s.add(ind+"5q");
 		}
-		player.play(new Pattern(String.join(" ", s)).setTempo(150).setInstrument("Flute"));
+		player.play(new Pattern(String.join(" ", s)).setTempo(150).setInstrument("Piano"));
 	}
 
 	public void saveNotesToFile(String name) {
@@ -87,7 +87,7 @@ public class generateMusic {
 			s.add(ind);
 		}
 		String list = String.join(" ", s);
-		Pattern pattern = new Pattern(list);
+		Pattern pattern = new Pattern(list).setTempo(150).setInstrument("Piano");
 		try {
 			MidiFileManager.savePatternToMidi(pattern, new File(name));
 		} catch (IOException e) {
@@ -97,7 +97,30 @@ public class generateMusic {
 	}
 
 	private static DecimalFormat df2 = new DecimalFormat("#.00");
-
+	public void generateOctaves(MultiLayerNetwork model) throws IOException, InterruptedException {
+		Integer max = 200, current = 0;
+		for (Integer i = 0; i < 200; i += 1) {
+			this.loadData("F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\generation_seeds\\oct_seed_01.txt");
+			INDArray evaluation = model.output(this.data.getFeatureMatrix());
+			Double mostConfidentIndex = 0.0;
+			Double mostConfidentValue = 0.0;
+			//System.out.println(evaluation);
+			for (Integer pI = 0; pI < 10; pI += 1) {
+				Double p = evaluation.getColumn(pI).getDouble(0);
+//				System.out.println(p);
+				if (p > mostConfidentValue) {
+					mostConfidentIndex = (double) Double.valueOf(df2.format((double) (((float) pI) / 10)));
+					//System.out.println(pI + " | " + (float) pI / 8);
+					mostConfidentValue = p;
+				}
+			}
+			appendNoteToFile(mostConfidentIndex, "F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\generation_seeds\\oct_seed_01.txt");
+			octaves.add(mostConfidentIndex);
+//			System.out.println("best note: " + NOTE_NAMES[mostConfidentIndex] + " prob: " + mostConfidentValue);
+		}
+		
+		System.out.println("OCT: " + Arrays.deepToString(octaves.toArray()));
+	}
 	public void generate(MultiLayerNetwork model) throws IOException, InterruptedException {
 		Integer max = 200, current = 0;
 		for (Integer i = 0; i < 200; i += 1) {
@@ -105,20 +128,21 @@ public class generateMusic {
 			INDArray evaluation = model.output(this.data.getFeatureMatrix());
 			Double mostConfidentIndex = 0.0;
 			Double mostConfidentValue = 0.0;
-			System.out.println(evaluation);
+			//System.out.println(evaluation);
 			for (Integer pI = 0; pI < 12; pI += 1) {
 				Double p = evaluation.getColumn(pI).getDouble(0);
 //				System.out.println(p);
 				if (p > mostConfidentValue) {
 					mostConfidentIndex = (double) Double.valueOf(df2.format((double) (((float) pI) / 12)));
-					System.out.println(pI + " | " + (float) pI / 12);
+					//System.out.println(pI + " | " + (float) pI / 12);
 					mostConfidentValue = p;
 				}
 			}
-			appendNoteToFile(mostConfidentIndex);
+			appendNoteToFile(mostConfidentIndex, "F:\\Invoy\\Projects\\ml-music\\piano-learning\\data\\generation_seeds\\gen_seed_01.txt");
 			notes.add(mostConfidentIndex);
 //			System.out.println("best note: " + NOTE_NAMES[mostConfidentIndex] + " prob: " + mostConfidentValue);
 		}
+		
 		System.out.println(Arrays.deepToString(notes.toArray()));
 	}
 }

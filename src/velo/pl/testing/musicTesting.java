@@ -15,20 +15,9 @@ public class musicTesting {
 
 	@Test
 	public void test() {
-	    ChordProgression cp = new ChordProgression("I IV V");
-
-	    Chord[] chords = cp.setKey("C").getChords();
-	    for (Chord chord : chords) {
-	      System.out.print("Chord "+chord+" has these notes: ");
-	      Note[] notes = chord.getNotes();
-	      for (Note note : notes) {
-	        System.out.print(note+" ");
-	      }
-	      System.out.println();
-	    }
 
 	    Player player = new Player();
-	    player.play(cp);
+	    player.play("V0 I[Piano] Eq Ch. | Eq Ch. | Dq Eq Dq Cq   V1 I[Flute] Rw | Rw | GmajQQQ CmajQ");
 	  }
 	
 

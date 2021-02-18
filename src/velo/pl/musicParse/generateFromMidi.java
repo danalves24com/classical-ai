@@ -35,8 +35,8 @@ public class generateFromMidi {
 	private static DecimalFormat df2 = new DecimalFormat("#.00");
 	public String[] NOTE_NAMES = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	private ArrayList<Double> noteList = new ArrayList<Double>();
-	ArrayList<Integer> octaveList = new ArrayList<Integer>();
-	private Map<Double[], Double> data = new HashMap<Double[], Double>();
+	ArrayList<Double> octaveList = new ArrayList<Double>();
+	private Map<Double[], Double> data = new HashMap<Double[], Double>(), dataO = new HashMap<Double[], Double>();
 	private Integer C = 0, D = 0, E = 0, F = 0, G = 0, A = 0, B = 0;
 	private Integer mean = 100;
 
@@ -51,9 +51,10 @@ public class generateFromMidi {
 					MidiMessage message = event.getMessage();
 					if (message instanceof ShortMessage) {
 						ShortMessage sm = (ShortMessage) message;
-						System.out.println(sm.getData1() +  " | " +  sm.getData2()  + " | " + sm.getCommand());
+						// System.out.println(sm.getData1() + " | " + sm.getData2() + " | " +
+						// sm.getCommand());
 						Integer key = Integer.valueOf(sm.getData1());
-						Integer octave = (key / 12) - 1;
+						Double octave = (double) ((key / 12) - 1) / 10;
 						Integer note = key % 12;
 						Double norm = (double) ((float) note / 12);
 						String noteV = NOTE_NAMES[(int) (norm * 12)];
@@ -174,7 +175,7 @@ public class generateFromMidi {
 			sum += d;
 		}
 		Integer mean = (int) ((sum / distr.length) * 0.60);
-		//this.mean = mean;
+		// this.mean = mean;
 		C = 0;
 		D = 0;
 		E = 0;
@@ -199,6 +200,37 @@ public class generateFromMidi {
 
 		}
 
+		for (Integer i = 0; i < octaveList.size() - (preVector + 1); i += 1) {
+			Double[] inputs = new Double[preVector];
+			for (Integer ii = 0; ii < preVector; ii += 1) {
+				Integer pos = i + ii;
+				inputs[ii] = octaveList.get(pos);
+			}
+			dataO.put(inputs, noteList.get(i + preVector));
+
+		}
+
+	}
+
+	public void SaveOctaves(String loc) {
+		String output = "";
+		for (Entry<Double[], Double> d : dataO.entrySet()) {
+			String out = "";
+			for (Double in : d.getKey()) {
+				out += (in) + ",";
+			}
+			out += d.getValue();
+			output += out + "\n";
+		}
+		final Path path = Paths.get(loc);
+
+		try (final BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8,
+				StandardOpenOption.CREATE);) {
+			writer.write(output);
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void SaveData() {

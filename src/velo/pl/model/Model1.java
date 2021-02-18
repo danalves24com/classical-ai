@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import org.deeplearning4j.eval.Evaluation;
+import org.deeplearning4j.nn.conf.BackpropType;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
@@ -26,7 +27,7 @@ public class Model1 {
 	private DataSet testingData = null;
 
 	public void setTestingData(String pathToFile) throws IOException, InterruptedException {
-		this.testingData = (new FileData()).get(pathToFile);
+		this.testingData = (new FileData()).get(pathToFile, in , out);
 	}
 
 	private Double thisAcc = 0.0;
@@ -47,7 +48,7 @@ public class Model1 {
 		System.out.print("learning new data");
 		Integer ep = 0;
 		Double accuracy = 0.0, target = 0.4;
-		while (accuracy < 0.4 && ep <= 15) {
+		while (accuracy < 0.8 && ep <= 15) {
 			System.out.println("running Epoch: " + ep + " Current ACC: " + accuracy + " prop: " + accuracy / target);
 			model.fit(dataSet);
 			try {
@@ -72,8 +73,8 @@ public class Model1 {
 				.layer(1, new DenseLayer.Builder().nIn(lSize).nOut(lSize).build())
 				.layer(2, new DenseLayer.Builder().nIn(lSize).nOut(lSize).build())
 				.layer(3,
-						new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-								.activation(Activation.SOFTMAX).nIn(16).nOut(this.out).build())
+						new OutputLayer.Builder(LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY)
+								.activation(Activation.SOFTMAX).nIn(lSize).nOut(this.out).build())
 				.backprop(true).pretrain(false).build();
 
 		// compile the model
