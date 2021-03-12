@@ -1,4 +1,2 @@
 # classical-ai
-
-
-not much of the code in this is particularly "good practice code" but it still got the job done in time.
+Much of this was done in a rush, so please excuse any bad practices or unrefactored code.
