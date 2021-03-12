@@ -24,7 +24,7 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
 public class databaseConnection {
 	/** The connection params. */
-	private String url = "jdbc:mysql://10.0.1.23:3306/neuralNetworks", username = "root", password = "Saniroot";
+	private String url = "jdbc:mysql://ooof/neuralNetworks", username = "root", password = "ooof";
 
 	/** The con. */
 	private static Connection con = null;
